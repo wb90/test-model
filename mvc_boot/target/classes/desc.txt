@@ -1,0 +1,6 @@
+Application.java   主运行程序  
+注意 controller 层必须在 Application 同级目录下  
+也就是说 Application  他如果再    cc.cn.cs 下  
+controller  必须在 cc.cn.cs.cc 里面
+也就是说不能在   cc.cn.cc   这样的话 Application启动就扫描不到controller了
+我也是初次 爬坑   就被这个包结构坑了
