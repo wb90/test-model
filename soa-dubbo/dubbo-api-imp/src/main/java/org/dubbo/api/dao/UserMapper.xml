@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dubbo.api.dao.UserMapper">
+	<resultMap id="user" type="org.dubbo.pojo.User">
+		<id column="userid" property="userid" />
+		<result column="name" property="name" />
+	</resultMap>
+
+	<select id="findById" parameterType="int" resultType="user">
+		select * from user where userid =
+		#{id}
+	</select>
+</mapper>
