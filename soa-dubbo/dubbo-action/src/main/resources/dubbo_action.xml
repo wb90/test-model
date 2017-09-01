@@ -19,7 +19,7 @@
 	<!--<dubbo:annotation package="com.alibaba.dubbo.demo"/> -->
 
 	<!-- 生成远程服务代理，可以和本地bean一样使用demoService -->
-	<dubbo:reference id="userService" interface="org.dubbo.api.service.UserService" />
+	<dubbo:reference id="userService" interface="org.dubbo.api.service.UserService"/>
 
 	<!-- 声明需要引用的服务接口 -->
 

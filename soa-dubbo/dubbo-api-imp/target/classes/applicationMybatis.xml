@@ -1,22 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:mvc="http://www.springframework.org/schema/mvc"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:lang="http://www.springframework.org/schema/lang" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="
-        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans 
         http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/mvc
-        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/lang 
+        http://www.springframework.org/schema/lang/spring-lang.xsd
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd
-http://www.springframework.org/schema/tx
-     http://www.springframework.org/schema/tx/spring-tx.xsd
-     http://www.springframework.org/schema/aop
-     http://www.springframework.org/schema/aop/spring-aop.xsd">
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/cache
+        http://www.springframework.org/schema/cache/spring-cache.xsd">
+
+	<!-- 加载配置文件 这里就一次性 把数据库和redis的文件都加载了 -->
+	<context:property-placeholder location="classpath*:db.properties,redis.properties" />
 
 
-	<!-- 加载配置文件 -->
-	<context:property-placeholder location="classpath*:db.properties" />
+	<!-- redis数据源 -->
+	<bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxIdle" value="${redis.maxIdle}" />
+		<property name="maxTotal" value="${redis.maxActive}" />
+		<property name="maxWaitMillis" value="${redis.maxWait}" />
+		<property name="testOnBorrow" value="${redis.testOnBorrow}" />
+	</bean>
+
+	<!-- spring-data-数据工厂 -->
+	<bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+		<property name="password" value="${redis.pass}" />
+		<property name="usePool" value="true" />
+		<property name="hostName" value="${redis.host}" />
+		<property name="port" value="${redis.port}" />
+		<property name="poolConfig" ref="poolConfig" />
+	</bean>
+
+
+	<!-- 使用中间类解决RedisCache.jedisConnectionFactory的静态注入，从而使MyBatis实现第三方缓存 -->
+	<bean id="redisCacheTransfer" class="org.dubbo.api.redis.RedisCacheTransfer">
+		<property name="jedisConnectionFactory" ref="jedisConnectionFactory" />
+	</bean>
+
+
+
 
 	<!-- 数据源 ,使用dbcp -->
 	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
@@ -24,14 +53,12 @@ http://www.springframework.org/schema/tx
 		<property name="url" value="${url}" />
 		<property name="username" value="${username}" />
 		<property name="password" value="${password}" />
-		<!-- <property name="maxPoolSize" value="${c3p0.pool.size.max}" /> <property name="minPoolSize" value="${c3p0.pool.size.min}" 
-			/> <property name="initialPoolSize" value="${c3p0.pool.size.ini}" /> <property name="acquireIncrement" 
-			value="${c3p0.pool.size.increment}" /> -->
 	</bean>
 
 	<!-- sqlSessionFactory -->
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<!-- 加載mybatis的配置文件 -->
+		<property name="configLocation" value="classpath:mybatis-config.xml" />
 		<property name="typeAliasesPackage" value="org.dubbo.pojo"></property>
 		<property name="mapperLocations" value="classpath:org/dubbo/api/dao/*.xml" />
 		<!-- 数据源 -->
@@ -69,4 +96,6 @@ http://www.springframework.org/schema/tx
 	<aop:config>
 		<aop:advisor advice-ref="txAdvice" pointcut="execution(* org.dubbo.api.imp..*.*(..))" />
 	</aop:config>
+
+
 </beans>

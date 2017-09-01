@@ -1,1 +1,1 @@
-asdsad
+${A.name}

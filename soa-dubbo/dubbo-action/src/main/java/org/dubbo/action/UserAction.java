@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jfinal.kit.StrKit;
@@ -32,6 +33,15 @@ public class UserAction {
 	public void listUser(HttpServletRequest request) {
 		User u = userService.findById(1);
 		System.err.println(u.getName());
+	}
+
+	@RequestMapping(value = "/listUsers", method = RequestMethod.GET)
+	public ModelAndView listUsers(HttpServletRequest request) {
+		ModelAndView andView = new ModelAndView();
+		User u = userService.findById(1);
+		andView.addObject("A",u);
+		andView.setViewName("index");
+		return andView;
 	}
 
 	@RequestMapping(value = "/return_str", method = RequestMethod.POST)

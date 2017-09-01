@@ -50,7 +50,7 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
       out = pageContext.getOut();
       _jspx_out = out;
 
-      out.write("asdsad");
+      out.write((java.lang.String) org.apache.jasper.runtime.PageContextImpl.proprietaryEvaluate("${A.name}", java.lang.String.class, (PageContext)_jspx_page_context, null, false));
     } catch (Throwable t) {
       if (!(t instanceof SkipPageException)){
         out = _jspx_out;

@@ -3,6 +3,8 @@
  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dubbo.api.dao.UserMapper">
+	<!-- 支持缓存配置 -->
+	<cache eviction="LRU" type="org.dubbo.api.redis.RedisCache" />
 	<resultMap id="user" type="org.dubbo.pojo.User">
 		<id column="userid" property="userid" />
 		<result column="name" property="name" />
